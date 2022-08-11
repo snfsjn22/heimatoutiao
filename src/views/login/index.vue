@@ -1,8 +1,10 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="login-container">
-    <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar" title="登录" />
+    <!-- 顶部导航栏 -->
+    <van-nav-bar class="page-nav-bar" title="登录">
+    <van-icon slot="left" name="cross" @click="$router.back()"></van-icon>
+    </van-nav-bar>
+    <!-- /顶部导航栏 -->
     <!-- 登陆表单 -->
     <van-form ref="loginForm" @submit="onSubmit">
       <van-field
@@ -47,7 +49,6 @@
           >
         </template>
       </van-field>
-      <!-- style="margin: 16px" -->
       <div class="login-btn-warp">
         <van-button class="login-btn" block type="info" native-type="submit">
           登录
@@ -65,6 +66,7 @@ export default {
   props: {},
   data() {
     return {
+      // 双向绑定的表单对象
       user: {
         mobile: '',
         code: '' // 验证码
@@ -106,9 +108,11 @@ export default {
       // 3.提交表单请求登录
       try {
         const { data } = await login(user)
-        // console.log('登陆成功', res)
-        this.$store.commit('setUser', data.data)
+        this.$store.commit('SET_USER', data.data)
         this.$toast.success('登陆成功')
+
+        // 登陆成功，跳转回原来页面
+        this.$router.back()
       } catch (err) {
         if (err.response.status === 400) {
           this.$toast.fail('手机号或验证码错误')
@@ -118,7 +122,6 @@ export default {
       }
     },
     async onSendSms() {
-      // console.log('onSendSms')
       // 1.验证手机号
       try {
         await this.$refs.loginForm.validate('mobile')
@@ -126,8 +129,6 @@ export default {
       } catch (err) {
         return console.log('验证失败', err)
       }
-      // console.log(123)
-      // this.$refs.loginForm.validate('mobile')
       // 2.验证通过，显示倒计时
       this.isCountDownShow = true
       // 3.请求发送验证码
@@ -152,6 +153,9 @@ export default {
 <style scoped lang="less">
 .login-container {
   // line-height: 45px;
+  .van-icon-cross {
+    color: #fff;
+  }
   .icon-shouji {
     font-size: 19px;
     // padding: 10px;
@@ -161,11 +165,7 @@ export default {
   }
 
   .send-sms-btn {
-    // width: 152px;
-    // height: 46px;
-    // font-style: 22px;
     background-color: #ededed;
-    // line-height: 46px;
     color: #666666;
   }
 
